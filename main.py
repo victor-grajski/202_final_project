@@ -4,6 +4,7 @@ import shutil
 import get_track_pool
 import analyse_track_pool
 import create_playlist
+import webbrowser
 
 
 def main():
@@ -65,13 +66,15 @@ def main():
 
     playlist_name = artist + '_' + high_low + '_' + feature
 
-    playlist_id = create_playlist.create_playlist(playlist_name)
-    print("Created playlist {}".format(playlist_id))
+    playlist_info = create_playlist.create_playlist(playlist_name)
+    print("Created playlist {}".format(playlist_info[0]))
 
     analysis_path = "{}/data/analysis.csv".format(os.path.dirname(os.path.realpath(__file__)))
     track_ids = create_playlist.read_csv(analysis_path)
 
-    results = create_playlist.sp.user_playlist_add_tracks(create_playlist.username, playlist_id, track_ids)
+    results = create_playlist.sp.user_playlist_add_tracks(create_playlist.username, playlist_info[0], track_ids)
+
+    webbrowser.open_new_tab(playlist_info[1])
 
     # TODO: clean up data folder
     data_path = get_track_pool.data_path

@@ -25,11 +25,10 @@ sp = spotipy.Spotify(auth=token)
 sp.trace = False
 
 
-
-
 def create_playlist(playlist_name):
     playlist = sp.user_playlist_create(username, playlist_name)
-    return playlist['id']
+    print(playlist['external_urls']['spotify'])
+    return (playlist['id'], playlist['external_urls']['spotify'])
 
 
 def read_csv(analysis_path):
@@ -44,20 +43,3 @@ def read_csv(analysis_path):
             else:
                 track_ids.append(row[0])
     return track_ids
-
-
-def main():
-    playlist_name = 'meep'
-
-    playlist_id = create_playlist(playlist_name)
-
-    track_ids = read_csv(analysis_path)
-    print(track_ids)
-
-    results = sp.user_playlist_add_tracks(username, playlist_id, track_ids)
-    pprint.pprint(results)
-    
-
-
-if __name__ == "__main__":
-    main()
