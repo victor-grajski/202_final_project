@@ -33,9 +33,13 @@ def main(feature, high_low):
 
    # Filtering the list and returning a ideal artist_song vector.
    if intensity == 'high':
-      artist_song_vector = artist_songs.nlargest(n, "{}".format(feature), keep='first').groupby(artist_songs['artist']).mean()
+      artist_similar_songs = artist_songs.nlargest(n, "{}".format(feature), keep='first')
+      artist_song_vector = artist_similar_songs.groupby(artist_songs['artist']).mean()
+   
    elif intensity == 'low':
-      artist_song_vector = artist_songs.nsmallest(n, "{}".format(feature), keep='first').groupby(artist_songs['artist']).mean()
+      artist_similar_songs = artist_songs.nsmallest(n, "{}".format(feature), keep='first')
+      artist_song_vector = artist_similar_songs.groupby(artist_songs['artist']).mean()
+   
    else:
       intensity = input("Please enter either max or min for how much of this quality you're looking for in your playlist").lower()
 
@@ -45,11 +49,17 @@ def main(feature, high_low):
    
    # filtering song pool to 25 most similar songs
    song_pool['cos_sim'] = a
-   playlist = song_pool.nlargest(25, "cos_sim", keep='first').reset_index()
-   
+   playlist_other_artists_songs = song_pool.nlargest(25, "cos_sim", keep ='first').reset_index()
+   playlist = playlist_other_artists_songs.append(artist_similar_songs,ignore_index = True)
+   playlist_track_id = playlist[['track_id']]
+
    # Saving playlist to CSV
    playlist_name = intensity + "_" + feature + "_" + artist
    # dir_path = os.path.dirname(os.path.realpath(__file__)) # when building with a IDE use this.
    # csv_file = "{}/data/{}.csv".format(dir_path, playlistname) # when building with a IDE use this.
    path = "{}/data/analysis.csv".format(os.path.dirname(os.path.realpath(__file__)))
-   playlist.to_csv(path, index=False)
+   playlist_track_id.to_csv(path, index = True)
+
+   print(playlist)
+
+# main('danceability', 'high')
