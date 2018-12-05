@@ -53,5 +53,3 @@ def main(feature, high_low):
    # csv_file = "{}/data/{}.csv".format(dir_path, playlistname) # when building with a IDE use this.
    path = "{}/data/analysis.csv".format(os.path.dirname(os.path.realpath(__file__)))
    playlist.to_csv(path, index=False)
-
-main('loudness', 'low')
