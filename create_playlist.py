@@ -27,7 +27,6 @@ sp.trace = False
 
 def create_playlist(playlist_name):
     playlist = sp.user_playlist_create(username, playlist_name)
-    print(playlist['external_urls']['spotify'])
     return (playlist['id'], playlist['external_urls']['spotify'])
 
 
