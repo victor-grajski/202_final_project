@@ -77,37 +77,40 @@ def get_track_features(track_ids):
     response = []
     tracks_with_features = []
 
-    if len(track_ids) > 100:
-        # get current length
-        length = len(track_ids)
+    if len(track_ids) > 0:
+        if len(track_ids) > 100:
+            # get current length
+            length = len(track_ids)
 
-        batches = math.ceil(length / 100)
+            batches = math.ceil(length / 100)
 
-        for i in range(batches):
-            batch = track_ids[100*i:99+(100*i)]
-            batch_response = sp.audio_features(batch)
-            response.extend(batch_response)
-    else:
-        response = sp.audio_features(track_ids)
+            for i in range(batches):
+                batch = track_ids[100*i:99+(100*i)]
+                batch_response = sp.audio_features(batch)
+                response.extend(batch_response)
+        else:
+            response = sp.audio_features(track_ids)
 
-    for track in response:
-        row = {
-            "track_id": track['id'],
-            "danceability": track['danceability'],
-            "energy": track['energy'],
-            "key": track['key'],
-            "loudness": track['loudness'],
-            "mode": track['mode'],
-            "speechiness": track['speechiness'],
-            "acousticness": track['acousticness'],
-            "instrumentalness": track['instrumentalness'],
-            "liveness": track['liveness'],
-            "valence": track['valence'],
-            "tempo": track['tempo']
-        }
-        tracks_with_features.append(row)
+        for track in response:
+            row = {
+                "track_id": track['id'],
+                "danceability": track['danceability'],
+                "energy": track['energy'],
+                "key": track['key'],
+                "loudness": track['loudness'],
+                "mode": track['mode'],
+                "speechiness": track['speechiness'],
+                "acousticness": track['acousticness'],
+                "instrumentalness": track['instrumentalness'],
+                "liveness": track['liveness'],
+                "valence": track['valence'],
+                "tempo": track['tempo']
+            }
+            tracks_with_features.append(row)
 
-    return tracks_with_features
+        return tracks_with_features
+    return []
+
 
 
 def write_to_csv(tracks_with_features, related):
