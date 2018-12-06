@@ -74,8 +74,4 @@ def main(feature, high_low):
    # dir_path = os.path.dirname(os.path.realpath(__file__)) # when building with a IDE use this.
    # csv_file = "{}/data/{}.csv".format(dir_path, playlistname) # when building with a IDE use this.
    path = "{}/data/analysis.csv".format(os.path.dirname(os.path.realpath(__file__)))
-   playlist_track_id.to_csv(path, index = False)
-
-   print(playlist)
-
-main('danceability', 'high')
+   playlist_track_id.to_csv(path, index = False
