@@ -31,26 +31,42 @@ def main(feature, high_low):
    else:
       n = int(len(artist_songs)*.1)
 
+   # Filtered song pool should be roughly the 20% of song pool based on the desired feature.
+   if len(song_pool) <= 200:
+      k = len(song_pool) - 1
+   elif (len(song_pool) <= 1000) and (len(song_pool) > 200):
+      k = 200
+   else:
+      k = int(len(song_pool)*.20)
+
+
    # Filtering the list and returning a ideal artist_song vector.
    if intensity == 'high':
       artist_similar_songs = artist_songs.nlargest(n, "{}".format(feature), keep='first')
       artist_song_vector = artist_similar_songs.groupby(artist_songs['artist']).mean()
-   
+      
+      filtered_song_pool = song_pool.nlargest(k, "{}".format(feature), keep='first')
+
    elif intensity == 'low':
       artist_similar_songs = artist_songs.nsmallest(n, "{}".format(feature), keep='first')
       artist_song_vector = artist_similar_songs.groupby(artist_songs['artist']).mean()
-   
+      
+      filtered_song_pool = song_pool.nsmallest(k, "{}".format(feature), keep='first')
+
    else:
       intensity = input("Please enter either max or min for how much of this quality you're looking for in your playlist").lower()
 
    # finding the similarity of songs in song pool to artist_song vector
-   cos_sim = skmet.pairwise.cosine_similarity(artist_song_vector, song_pool, dense_output=True)
+   cos_sim = skmet.pairwise.cosine_similarity(artist_song_vector, filtered_song_pool, dense_output=True)
    a = cos_sim.tolist()[0]
    
    # filtering song pool to 25 most similar songs
-   song_pool['cos_sim'] = a
-   playlist_other_artists_songs = song_pool.nlargest(25, "cos_sim", keep ='first').reset_index()
+   filtered_song_pool['cos_sim'] = a
+   playlist_other_artists_songs = filtered_song_pool.nlargest(25, "cos_sim", keep ='first').reset_index()
    playlist = playlist_other_artists_songs.append(artist_similar_songs,ignore_index = True)
+   playlist['concant'] = playlist["danceability"] + playlist["energy"] + playlist["speechiness"] + playlist["acousticness"] + playlist["instrumentalness"]
+   playlist = playlist.drop_duplicates('concant').sample(frac = 1)
+
    playlist_track_id = playlist[['track_id']]
 
    # Saving playlist to CSV
@@ -58,8 +74,8 @@ def main(feature, high_low):
    # dir_path = os.path.dirname(os.path.realpath(__file__)) # when building with a IDE use this.
    # csv_file = "{}/data/{}.csv".format(dir_path, playlistname) # when building with a IDE use this.
    path = "{}/data/analysis.csv".format(os.path.dirname(os.path.realpath(__file__)))
-   playlist_track_id.to_csv(path, index = True)
+   playlist_track_id.to_csv(path, index = False)
 
    print(playlist)
 
-# main('danceability', 'high')
+main('danceability', 'high')
